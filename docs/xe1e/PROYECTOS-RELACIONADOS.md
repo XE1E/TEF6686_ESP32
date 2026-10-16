@@ -22,6 +22,7 @@ inferencia o dicho por terceros sin confirmar.
 10. [Propuesta de proyecto propio](#10-propuesta-de-proyecto-propio)
 11. [Correcciones al análisis del waterfall](#11-correcciones-al-análisis-del-waterfall)
 12. [Lo que aporta fmdx.org](#12-lo-que-aporta-fmdxorg-revisado-el-2026-10-16)
+13. [PU2CLR / TEF668X](#13-pu2clr--tef668x-revisado-el-2026-10-16)
 
 ---
 
@@ -100,8 +101,10 @@ audio**. Un monitor de fondo mientras escuchas sólo es posible en FM.
 - **SSB, BFO, CW, AM síncrono, AM estéreo**: no existen en el TEF668x.
 - **Ancho de banda AM**: según el manual NXP, sólo **3, 4, 6 u 8 kHz** (la biblioteca de
   SamuelCicuitStudio documenta 3.0-8.0 continuo; contradice al manual: **probar**).
-- **Preamplificador o sintonía de antena** en AM: sólo un **atenuador** de 0 a 36 dB. Por eso en
-  SW rinde menos que un Si4735 (conclusión de lalith-ais).
+- **Antena en AM:** el chip **sí tiene un preamplificador (LNA) de AM con AGC**, pensado para antenas
+  activas y pasivas, pero no se ajusta a mano más allá del umbral del AGC (94-102 dBµV) y un
+  **atenuador** de 0 a 36 dB; no hay sintonía de antena. Aun así, en SW rinde menos que un Si4735
+  (conclusión de lalith-ais). (Corregido el 2026-10-16: antes decía «no hay preamplificador».)
 - **HD Radio / DRM**: sólo el TEF6688/6689 saca banda base digital, y necesita decodificador
   externo. El DP-666 trae TEF6686.
 
@@ -503,3 +506,22 @@ Calificaciones de usuarios de los receptores TEF más comunes [verificado en `tu
 - **ESP32 DAB+ Tuner** (Si4684): no aplica en México (no hay DAB).
 - **xdrd**: servidor que comparte un sintonizador XDR por la red; el firmware propio ya habla XDR
   por TCP, así que no hace falta.
+
+---
+
+## 13. PU2CLR / TEF668X (revisado el 2026-10-16)
+
+https://github.com/pu2clr/TEF668X (Ricardo Caratti, PU2CLR, autor de la biblioteca del SI4735).
+
+- **Sólo tiene un README**, «en construcción», de julio de 2020; **no hay código**. El autor siguió con
+  su biblioteca del SI4735 (muy usada, 817 estrellas) y no volvió a esta. Licencia anunciada: MIT.
+- **Lo útil:** un resumen de capacidades del TEF668x tomado de la hoja de datos de NXP, que confirma:
+  - **LNA de AM con AGC**, «para antenas activas y pasivas» (ver la corrección en la sección 2);
+  - LNA de FM con AGC, ecualizador de canal (cEQ), soft mute por modulación, stereo high blend;
+  - procesamiento digital de FI con corrección I/Q y **filtro de ancho variable (PACS)**;
+  - noise blanker en AM y FM, detección de calidad y procesamiento de señal débil;
+  - **GPIO configurables** para RDS, **aviso de calidad (QSI)** y E/S por I2C;
+  - **una entrada y una salida I2S** (en el DP-666 la salida sólo llega a puntos de prueba);
+  - TEF6688: banda base por I2S para HD Radio/DRM con coprocesador externo.
+- **Como modelo:** la documentación de su biblioteca del SI4735 (API, ejemplos, esquemas) es una buena
+  referencia de cómo documentar el firmware si algún día se publica.
