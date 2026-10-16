@@ -4,6 +4,12 @@ Revisión del 2026-10-16 para el fork de XE1E de [PE5PVB/TEF6686_ESP32](https://
 pensando en el **Deepelec DP-666**. Objetivo: decidir si un waterfall es útil de verdad en
 este radio, cómo debe funcionar y qué límites pone el hardware, **antes** de escribir código.
 
+> **Actualización (2026-10-16, tras revisar los proyectos relacionados):** el modo *AF update*
+> existe **sólo en FM**; en AM (LW/MW/SW) cualquier barrido corta el audio, y cada punto necesita
+> **~40 ms** para medir bien (medido por zeevy en el ATS-125). En FM, con modo *Search* + 4 ms, la
+> banda completa baja a **~1.1 s**. Detalle en [PROYECTOS-RELACIONADOS.md](PROYECTOS-RELACIONADOS.md),
+> sección 11.
+
 ## 1. Resumen
 
 - **Se puede hacer, pero no es el waterfall de un SDR.** El TEF6686 sintoniza una sola
@@ -58,8 +64,8 @@ mida (**el número a averiguar**) y leer 14 bytes de calidad (~0.4 ms).
 |---|---|---|---|
 | FM completa, 100 kHz | 206 | ~1.2 s | ~0.6 s |
 | FM ±1 MHz, 50 kHz | 41 | ~0.25 s | ~0.12 s |
-| OM 520-1720, 10 kHz | 121 | ~1.0 s (8 ms) | — |
-| 49 m (5.9-6.2 MHz), 5 kHz | 61 | ~0.5 s (8 ms) | — |
+| OM 520-1720, 10 kHz | 121 | ~5 s (**40 ms en AM**, medido) | — |
+| 49 m (5.9-6.2 MHz), 5 kHz | 61 | ~2.5 s (40 ms) | — |
 
 El dibujo no es el cuello de botella: un renglón de 320 px son 640 bytes por SPI
 (décimas de milisegundo). Redibujar todo el waterfall (~320×100) son ~13 ms.
