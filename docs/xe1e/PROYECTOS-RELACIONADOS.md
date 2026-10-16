@@ -21,6 +21,7 @@ inferencia o dicho por terceros sin confirmar.
 9. [Licencias: qué se puede copiar y qué sólo inspirar](#9-licencias-qué-se-puede-copiar-y-qué-sólo-inspirar)
 10. [Propuesta de proyecto propio](#10-propuesta-de-proyecto-propio)
 11. [Correcciones al análisis del waterfall](#11-correcciones-al-análisis-del-waterfall)
+12. [Lo que aporta fmdx.org](#12-lo-que-aporta-fmdxorg-revisado-el-2026-10-16)
 
 ---
 
@@ -454,3 +455,51 @@ Respecto a `WATERFALL-ANALISIS.md`:
 3. **FM puede ser más rápida** que lo estimado: con modo Search + 4 ms, ~1.1 s por la banda
    completa (CMB). El modo Search, además, evita los «pops» del Preset.
 4. El orden de prioridades por banda queda en la sección 8 de este documento.
+
+---
+
+## 12. Lo que aporta fmdx.org (revisado el 2026-10-16)
+
+Página del proyecto: https://fmdx.org/projects/tef6686-esp32.php (portal de la comunidad FM-DX,
+donde está PE5PVB). Casi todo lo enlazado ya está revisado arriba (firmware de PE5PVB, sintonizador
+sin pantalla, FM-DX Webserver, XDR-GTK, xdrd). Lo nuevo:
+
+### Guía de receptores (`/projects/guide/`, datos en `tuners.json`)
+
+Calificaciones de usuarios de los receptores TEF más comunes [verificado en `tuners.json`]:
+
+- **Deepelec DP-666: 5 de 5.** «La placa parece muy bien construida y el precio es muy competitivo.
+  Los usuarios parecen muy satisfechos.» A favor: teclado numérico, compatible con FM-DX Webserver,
+  firmware de PE5PVB, **fácil de actualizar**. En contra: «le iría mejor una caja de metal».
+  Precio de referencia: 83.66 € con IVA europeo; batería de 5000 mAh.
+- **Cajas de plástico = interferencia (QRM):** de varios modelos de plástico reportan problemas de
+  ruido de la propia electrónica; recomiendan los de caja metálica. Importa para MW/SW, donde ese
+  ruido se nota más. → Medirlo en la fase 0 y, si hace falta, **blindar** por dentro (cinta de cobre
+  o pintura conductiva en la caja) y dar opciones de «pantalla quieta» y WiFi apagado (sección 8.2).
+- **Modelos con buenas ideas de hardware:** uno con **interruptor de LNA** (preamplificador, «para DX
+  con antena telescópica») y otro (Qodosen SR-286, firmware cerrado) con **antena de ferrita aparte
+  para AM** y una pantalla más sencilla «con menos QRM».
+- **Advertencias de otros modelos:** chips TEF6686 falsos y unidades de señal mal calibradas en uno
+  de HamGeek; pantalla pegada en vez de atornillada en algunos plateados.
+
+### Refacciones recomendadas
+
+- **Pigtail RG178** (cable interno del conector SMA a la placa): «se recomienda cambiarlo si cuesta
+  recibir incluso las locales fuertes». → Revisar el del DP-666 si la recepción sale floja.
+- Antena telescópica SMA de 75 cm, batería de 5000 mAh compatible (formato 955565), tornillos M2.
+
+### Propagación
+
+- El portal muestra el **estado de esporádica E para Norteamérica** (datos de FMLIST) y tiene una
+  herramienta de **MUF** (`/js/tools/get_muf.js`; FM-DX Webserver la consulta en
+  `fmdx.org/includes/tools/get_muf.php`). → Para las alertas de apertura en FM (sección 8.3), el radio
+  podría consultar esa MUF por WiFi y avisar sólo cuando haya Es, como hace el plugin Scanner.
+- **Mapas de tropo:** Hepburn (dxinfocentre.com) cubre Norteamérica, incluido México.
+- **Mapa de transmisores** (maps.fmdx.org, base de FMLIST): fuente posible para la **lista de
+  estaciones de México** (sección 8.3), además de los datos del IFT.
+
+### Otros proyectos enlazados
+
+- **ESP32 DAB+ Tuner** (Si4684): no aplica en México (no hay DAB).
+- **xdrd**: servidor que comparte un sintonizador XDR por la red; el firmware propio ya habla XDR
+  por TCP, así que no hace falta.
