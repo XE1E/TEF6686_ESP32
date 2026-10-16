@@ -388,13 +388,39 @@ términos para él.
 + registros**. Del código de PE5PVB se toma lo que haga falta (es la misma licencia). Se puede
 seguir trayendo mejoras de zeevy mientras convenga, sin depender de él.
 
-### 10.2 Primeros pasos (antes y después de tener el radio)
+### 10.2 La memoria flash: 4 MB del DP-666 contra 8 MB del ATS-125
+
+`tef668x-esp32` está hecho para **8 MB** (`partitions.csv`): **dos espacios de programa de 3 MB**
+(para actualizarse por WiFi: escribe la versión nueva en el espacio libre y, si falla, regresa a la
+anterior) y 1.9 MB de datos (barridos, logbook, memorias). El programa compilado (v0.4.0,
+`firmware-ats125.bin`) pesa **1.97 MB** [verificado].
+
+El DP-666 tiene **4 MB**; descontando el arranque quedan **~4.1 MB útiles**. El programa cabe; lo que
+no cabe es esa forma de repartir la memoria:
+
+| Opción | Reparto | ¿Cabe? | Qué se pierde |
+|---|---|---|---|
+| **1. Un solo espacio de programa** ⭐ | Programa ~2.8 MB + datos ~1.2 MB | **Sí**, con ~800 KB para crecer | La actualización por WiFi con regreso automático: se actualiza **por USB**, como hoy el firmware de PE5PVB |
+| 2. Dos espacios de ~1.94 MB | Programa ×2 + casi nada de datos | Apenas (le sobran ~60 KB) | Espacio para crecer y para datos; no sirve a largo plazo |
+| 3. Cambiar el módulo por un ESP32-WROOM-32U de 8 o 16 MB | Igual que el ATS-125 | Sí, todo | Desoldar y soldar el módulo con aire caliente |
+
+**Decisión propuesta:** empezar con la **opción 1**. Referencia: el firmware de PE5PVB que trae el
+DP-666 pesa 3.3 MB y cabe justamente porque usa un solo espacio de programa. Si el proyecto
+crece mucho o se quiere actualizar por WiFi, la **opción 3** es viable: el ESP32-WROOM-32U existe
+en 4, 8 y 16 MB con las mismas medidas y patas, por pocos dólares. También se puede ahorrar
+espacio quitando fuentes grandes o partes de la página web.
+
+Hay que tomar en cuenta que en `tef668x-esp32` la tabla de particiones se declara fija «desde la
+primera imagen» (cambiarla obliga a reflashear por cable), así que la del DP-666 hay que decidirla
+**antes** de la primera versión que se instale.
+
+### 10.3 Primeros pasos (antes y después de tener el radio)
 
 **Sin el radio (se puede empezar ya):**
 1. Confirmar con el diagrama del DP-666 los pines (pantalla, táctil, perilla, botones, teclado
    XL9555, batería, cristal) contra `board_ats125.h`; escribir `board_dp666.h`.
-2. Diseñar la tabla de particiones para **4 MB** (una ranura de app de ~2.5 MB + datos, o dos
-   ranuras compactas si el binario baja) y compilar el firmware para el DP-666.
+2. Hacer la tabla de particiones para **4 MB** con un solo espacio de programa (sección 10.2) y
+   compilar el firmware para el DP-666.
 3. Empezar los módulos del núcleo que se prueban en la PC: espectro (piso de ruido, picos,
    referencia, diferencia), detector de aperturas, clasificador de actividad, lógica de offset y
    co-canal en AM, registro de propagación.
@@ -405,9 +431,10 @@ seguir trayendo mejoras de zeevy mientras convenga, sin depender de él.
 5. Primera versión en el DP-666 con lo básico funcionando (bandas, sonido, perilla, teclado).
 6. Espectro/waterfall en pantalla, luego las funciones de MW/SW de la sección 8.
 
-### 10.3 Riesgos
+### 10.4 Riesgos
 
-- **4 MB de flash**: puede obligar a renunciar a la OTA doble o a fuentes grandes.
+- **4 MB de flash**: sin actualización por WiFi con regreso automático, salvo cambiar el módulo
+  (sección 10.2).
 - **Pines del DP-666** diferentes del ATS-125 (se resuelve con el diagrama).
 - **Ruido**: pantalla, WiFi y bus I2C meten ruido en MW/SW; medirlo y dar opciones para apagarlos.
 - **Mantenimiento**: un proyecto propio es trabajo continuo; conviene ir publicando versiones
